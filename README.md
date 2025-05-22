@@ -125,55 +125,21 @@ The repository contains example applications demonstrating various features:
 
 ### Basic Example
 
-See [examples/basic/main.go](examples/basic/main.go) for a simple usage example:
-
-```go
-// Basic example of using debuggo
-package main
-
-import (
-    "fmt"
-    "time"
-    "github.com/GeoffreyPlitt/debuggo"
-)
-
-// Initialize debug loggers at package level
-var (
-    debugApp = debuggo.Debug("app")
-    debugDb  = debuggo.Debug("db")
-    debugApi = debuggo.Debug("api")
-)
-
-func main() {
-    // Application startup
-    fmt.Println("Starting application...")
-    debugApp("Application starting")
-    
-    debugDb("Connecting to database")
-    time.Sleep(100 * time.Millisecond)
-    debugDb("Database connected")
-    
-    debugApi("API server listening on port 8080")
-    
-    if debuggo.IsEnabled("app") {
-        // Only runs when "app" debugging is enabled
-        debugApp("Detailed startup information: %v", getDetailedInfo())
-    }
-    
-    fmt.Println("Application running.")
-}
-```
+See [examples/basic/main.go](examples/basic/main.go) for a simple usage example that demonstrates:
+- Creating debug loggers for different components
+- Conditional execution of expensive debug operations
+- Basic debugging workflow
 
 #### Output with DEBUG=*
 
 ```
 $ DEBUG="*" go run examples/basic/main.go
 Starting application...
-20:44:04.909 app Application starting
-20:44:04.909 db Connecting to database
-20:44:05.010 db Database connected
-20:44:05.010 api API server listening on port 8080
-20:44:05.010 app Detailed startup information: map[buildDate:2025-05-21 20:44:05.01036 -0700 PDT m=+0.101441584 environment:development version:1.0.0]
+21:18:46.153 app Application starting
+21:18:46.153 db Connecting to database
+21:18:46.254 db Database connected
+21:18:46.254 api API server listening on port 8080
+21:18:46.254 app Detailed startup information: map[buildDate:2025-05-21 21:18:46.254771 -0700 PDT m=+0.101639834 environment:development version:1.0.0]
 Application running. Debug messages were sent to stderr.
 ```
 
@@ -182,8 +148,8 @@ Application running. Debug messages were sent to stderr.
 ```
 $ DEBUG="db" go run examples/basic/main.go
 Starting application...
-20:44:05.249 db Connecting to database
-20:44:05.350 db Database connected
+21:18:46.478 db Connecting to database
+21:18:46.579 db Database connected
 Application running. Debug messages were sent to stderr.
 ```
 
@@ -200,26 +166,26 @@ See [examples/advanced/main.go](examples/advanced/main.go) for:
 $ DEBUG="app:server:*" go run examples/advanced/main.go
 Starting application with DEBUG=app:server:*
 Try running with different DEBUG settings:
-  DEBUG=app:* ./advanced
-  DEBUG=app:server:* ./advanced
-  DEBUG=*,!app:server:websocket ./advanced
+  DEBUG="app:*" ./advanced
+  DEBUG="app:server:*" ./advanced
+  DEBUG="*,!app:server:websocket" ./advanced
 
-20:44:05.557 app:server:http HTTP server starting on port 8080
-20:44:05.558 app:server:websocket WebSocket server starting on port 8081
-20:44:05.558 app:server:http Received HTTP request: /api/users
-20:44:05.609 app:server:http HTTP request completed: /api/users
-20:44:05.609 app:server:http Received HTTP request: /api/products
-20:44:05.660 app:server:http HTTP request completed: /api/products
-20:44:05.660 app:server:websocket WebSocket message received: user-connected
-20:44:05.691 app:server:websocket WebSocket message processed: user-connected
+21:18:46.798 app:server:http HTTP server starting on port 8080
+21:18:46.798 app:server:websocket WebSocket server starting on port 8081
+21:18:46.798 app:server:http Received HTTP request: /api/users
+21:18:46.849 app:server:http HTTP request completed: /api/users
+21:18:46.849 app:server:http Received HTTP request: /api/products
+21:18:46.901 app:server:http HTTP request completed: /api/products
+21:18:46.901 app:server:websocket WebSocket message received: user-connected
+21:18:46.932 app:server:websocket WebSocket message processed: user-connected
 
 --- Changing debug configuration at runtime ---
 Changing DEBUG from 'app:server:*' to '*,!app:server:websocket,app:database'
-20:44:05.691 app:server:http Received HTTP request: /api/settings
-20:44:05.742 app:server:http HTTP request completed: /api/settings
-20:44:05.773 app:database Executing complex query
-20:44:05.773 app:database Query completed in 25ms
-20:44:05.773 app:security Security audit completed
+21:18:46.932 app:server:http Received HTTP request: /api/settings
+21:18:46.983 app:server:http HTTP request completed: /api/settings
+21:18:47.014 app:database Executing complex query
+21:18:47.014 app:database Query completed in 25ms
+21:18:47.014 app:security Security audit completed
 ```
 
 #### Output with DEBUG=*
@@ -228,28 +194,28 @@ Changing DEBUG from 'app:server:*' to '*,!app:server:websocket,app:database'
 $ DEBUG="*" go run examples/advanced/main.go
 Starting application with DEBUG=*
 Try running with different DEBUG settings:
-  DEBUG=app:* ./advanced
-  DEBUG=app:server:* ./advanced
-  DEBUG=*,!app:server:websocket ./advanced
+  DEBUG="app:*" ./advanced
+  DEBUG="app:server:*" ./advanced
+  DEBUG="*,!app:server:websocket" ./advanced
 
-20:44:05.942 app:server Server initializing
-20:44:05.942 app:server:http HTTP server starting on port 8080
-20:44:05.942 app:server:websocket WebSocket server starting on port 8081
-20:44:05.942 app:database Connecting to database
-20:44:05.942 app:server:http Received HTTP request: /api/users
-20:44:05.993 app:server:http HTTP request completed: /api/users
-20:44:05.993 app:server:http Received HTTP request: /api/products
-20:44:06.044 app:server:http HTTP request completed: /api/products
-20:44:06.044 app:server:websocket WebSocket message received: user-connected
-20:44:06.075 app:server:websocket WebSocket message processed: user-connected
+21:18:47.218 app:server Server initializing
+21:18:47.219 app:server:http HTTP server starting on port 8080
+21:18:47.219 app:server:websocket WebSocket server starting on port 8081
+21:18:47.219 app:database Connecting to database
+21:18:47.219 app:server:http Received HTTP request: /api/users
+21:18:47.270 app:server:http HTTP request completed: /api/users
+21:18:47.270 app:server:http Received HTTP request: /api/products
+21:18:47.321 app:server:http HTTP request completed: /api/products
+21:18:47.321 app:server:websocket WebSocket message received: user-connected
+21:18:47.352 app:server:websocket WebSocket message processed: user-connected
 
 --- Changing debug configuration at runtime ---
 Changing DEBUG from '*' to '*,!app:server:websocket,app:database'
-20:44:06.075 app:server:http Received HTTP request: /api/settings
-20:44:06.126 app:server:http HTTP request completed: /api/settings
-20:44:06.157 app:database Executing complex query
-20:44:06.157 app:database Query completed in 25ms
-20:44:06.158 app:security Security audit completed
+21:18:47.352 app:server:http Received HTTP request: /api/settings
+21:18:47.403 app:server:http HTTP request completed: /api/settings
+21:18:47.434 app:database Executing complex query
+21:18:47.434 app:database Query completed in 25ms
+21:18:47.434 app:security Security audit completed
 ```
 
 ## Development
