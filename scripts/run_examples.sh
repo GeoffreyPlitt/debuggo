@@ -16,6 +16,10 @@ trap handle_error ERR
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 echo "Project root: ${ROOT_DIR}"
 
+# Clean up any previous output files
+echo "Cleaning up previous output files..."
+rm -f "${ROOT_DIR}"/example_outputs/*.stdout "${ROOT_DIR}"/example_outputs/*.stderr 2>/dev/null || true
+
 # Create temporary directory
 TMPDIR=$(mktemp -d)
 echo "Using temporary directory: ${TMPDIR}"
@@ -39,7 +43,7 @@ create_gomod() {
     cat > "${dir}/go.mod" << EOF
 module ${module}
 
-go 1.19
+go 1.22
 
 replace github.com/GeoffreyPlitt/debuggo => ${ROOT_DIR}
 require github.com/GeoffreyPlitt/debuggo v0.0.0-00000000000000-000000000000
@@ -64,12 +68,8 @@ run_example() {
     
     echo "Running ${example_type} example with DEBUG=${debug_value}"
     
-    # Run tidy only on first run for each example type
-    if [[ "$4" == "tidy" ]]; then
-        (cd "${TMPDIR}/${example_type}" && go mod tidy && DEBUG="${debug_value}" go run . > "${OUTDIR}/${output_prefix}.stdout" 2> "${OUTDIR}/${output_prefix}.stderr")
-    else
-        (cd "${TMPDIR}/${example_type}" && DEBUG="${debug_value}" go run . > "${OUTDIR}/${output_prefix}.stdout" 2> "${OUTDIR}/${output_prefix}.stderr")
-    fi
+    # Always run go mod tidy for reliability
+    (cd "${TMPDIR}/${example_type}" && go mod tidy && DEBUG="${debug_value}" go run . > "${OUTDIR}/${output_prefix}.stdout" 2> "${OUTDIR}/${output_prefix}.stderr")
     
     echo "Generated ${output_prefix}.stdout and ${output_prefix}.stderr"
 }
@@ -88,9 +88,9 @@ display_output() {
 }
 
 # Run examples and capture output
-run_example "basic" "*" "basic_all_output" "tidy"
+run_example "basic" "*" "basic_all_output"
 run_example "basic" "db" "basic_db_output"
-run_example "advanced" "app:server:*" "advanced_server_output" "tidy"
+run_example "advanced" "app:server:*" "advanced_server_output"
 run_example "advanced" "*" "advanced_all_output"
 
 echo "All outputs captured in ${OUTDIR}"
