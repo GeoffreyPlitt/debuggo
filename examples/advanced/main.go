@@ -62,9 +62,9 @@ func main() {
 func printInstructions() {
 	fmt.Println("Starting application with DEBUG=" + os.Getenv("DEBUG"))
 	fmt.Println("Try running with different DEBUG settings:")
-	fmt.Println("  DEBUG=app:* ./advanced")
-	fmt.Println("  DEBUG=app:server:* ./advanced")
-	fmt.Println("  DEBUG=*,!app:server:websocket ./advanced")
+	fmt.Println("  DEBUG=\"app:*\" ./advanced")
+	fmt.Println("  DEBUG=\"app:server:*\" ./advanced")
+	fmt.Println("  DEBUG=\"*,!app:server:websocket\" ./advanced")
 	fmt.Println("")
 }
 

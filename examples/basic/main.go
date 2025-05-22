@@ -8,6 +8,7 @@
 package main
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/GeoffreyPlitt/debuggo"
@@ -22,6 +23,7 @@ var (
 
 func main() {
 	// Application startup sequence with debug logs
+	fmt.Println("Starting application...")
 	debugApp("Application starting")
 
 	// Simulating database connection
@@ -37,6 +39,8 @@ func main() {
 		// This code only runs when "app" debugging is enabled
 		debugApp("Detailed startup information: %v", getDetailedInfo())
 	}
+
+	fmt.Println("Application running. Debug messages were sent to stderr.")
 }
 
 // getDetailedInfo returns detailed information for debugging

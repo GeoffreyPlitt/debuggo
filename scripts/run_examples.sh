@@ -393,19 +393,19 @@ mkdir -p $OUTDIR
 
 # Run examples and capture output
 echo -e "${YELLOW}=== Running basic example with DEBUG=* ===${NC}"
-(cd $TMPDIR/basic && DEBUG=* go run . > >(tee $OUTDIR/basic_all_output.stdout) 2> >(tee $OUTDIR/basic_all_output.stderr >&2))
+(cd $TMPDIR/basic && DEBUG="*" go run . > >(tee $OUTDIR/basic_all_output.stdout) 2> >(tee $OUTDIR/basic_all_output.stderr >&2))
 
 echo ""
 echo -e "${YELLOW}=== Running basic example with DEBUG=db ===${NC}"
-(cd $TMPDIR/basic && DEBUG=db go run . > >(tee $OUTDIR/basic_db_output.stdout) 2> >(tee $OUTDIR/basic_db_output.stderr >&2))
+(cd $TMPDIR/basic && DEBUG="db" go run . > >(tee $OUTDIR/basic_db_output.stdout) 2> >(tee $OUTDIR/basic_db_output.stderr >&2))
 
 echo ""
 echo -e "${YELLOW}=== Running advanced example with DEBUG=app:server:* ===${NC}"
-(cd $TMPDIR/advanced && DEBUG=app:server:* go run . > >(tee $OUTDIR/advanced_server_output.stdout) 2> >(tee $OUTDIR/advanced_server_output.stderr >&2))
+(cd $TMPDIR/advanced && DEBUG="app:server:*" go run . > >(tee $OUTDIR/advanced_server_output.stdout) 2> >(tee $OUTDIR/advanced_server_output.stderr >&2))
 
 echo ""
 echo -e "${YELLOW}=== Running advanced example with DEBUG=* ===${NC}"
-(cd $TMPDIR/advanced && DEBUG=* go run . > >(tee $OUTDIR/advanced_all_output.stdout) 2> >(tee $OUTDIR/advanced_all_output.stderr >&2))
+(cd $TMPDIR/advanced && DEBUG="*" go run . > >(tee $OUTDIR/advanced_all_output.stdout) 2> >(tee $OUTDIR/advanced_all_output.stderr >&2))
 
 echo ""
 echo -e "${GREEN}All outputs captured in ${OUTDIR}/${NC}"

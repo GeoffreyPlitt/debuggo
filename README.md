@@ -55,16 +55,16 @@ The `DEBUG` environment variable controls which debug messages are displayed:
 
 ```bash
 # Enable all debug output
-DEBUG=* go run main.go
+DEBUG="*" go run main.go
 
 # Enable specific modules
-DEBUG=http,db go run main.go
+DEBUG="http,db" go run main.go
 
 # Enable hierarchical modules
-DEBUG=myapp:* go run main.go  # Enables all 'myapp:' modules
+DEBUG="myapp:*" go run main.go  # Enables all 'myapp:' modules
 
 # Enable everything except specific modules
-DEBUG=*,!verbose go run main.go
+DEBUG="*,!verbose" go run main.go
 ```
 
 ## Advanced Usage
@@ -167,23 +167,23 @@ func main() {
 #### Output with DEBUG=*
 
 ```
-$ DEBUG=* go run examples/basic/main.go
+$ DEBUG="*" go run examples/basic/main.go
 Starting application...
-20:16:27.045 app Application starting
-20:16:27.045 db Connecting to database
-20:16:27.146 db Database connected
-20:16:27.146 api API server listening on port 8080
-20:16:27.146 app Detailed startup information: map[buildDate:2025-05-21 20:16:27.146 environment:development version:1.0.0]
+20:33:19.161 app Application starting
+20:33:19.161 db Connecting to database
+20:33:19.261 db Database connected
+20:33:19.261 api API server listening on port 8080
+20:33:19.261 app Detailed startup information: map[buildDate:2025-05-21 20:33:19.26193 -0700 PDT m=+0.100638126 environment:development version:1.0.0]
 Application running. Debug messages were sent to stderr.
 ```
 
 #### Output with DEBUG=db
 
 ```
-$ DEBUG=db go run examples/basic/main.go
+$ DEBUG="db" go run examples/basic/main.go
 Starting application...
-20:16:27.331 db Connecting to database
-20:16:27.432 db Database connected
+20:33:27.828 db Connecting to database
+20:33:27.929 db Database connected
 Application running. Debug messages were sent to stderr.
 ```
 
@@ -197,59 +197,59 @@ See [examples/advanced/main.go](examples/advanced/main.go) for:
 #### Output with DEBUG=app:server:*
 
 ```
-$ DEBUG=app:server:* go run examples/advanced/main.go
+$ DEBUG="app:server:*" go run examples/advanced/main.go
 Starting application with DEBUG=app:server:*
 Try running with different DEBUG settings:
   DEBUG=app:* ./advanced
   DEBUG=app:server:* ./advanced
   DEBUG=*,!app:server:websocket ./advanced
 
-20:16:27.648 app:server:http HTTP server starting on port 8080
-20:16:27.648 app:server:websocket WebSocket server starting on port 8081
-20:16:27.648 app:server:http Received HTTP request: /api/users
-20:16:27.699 app:server:http HTTP request completed: /api/users
-20:16:27.699 app:server:http Received HTTP request: /api/products
-20:16:27.750 app:server:http HTTP request completed: /api/products
-20:16:27.750 app:server:websocket WebSocket message received: user-connected
-20:16:27.781 app:server:websocket WebSocket message processed: user-connected
+20:33:37.024 app:server:http HTTP server starting on port 8080
+20:33:37.024 app:server:websocket WebSocket server starting on port 8081
+20:33:37.024 app:server:http Received HTTP request: /api/users
+20:33:37.075 app:server:http HTTP request completed: /api/users
+20:33:37.075 app:server:http Received HTTP request: /api/products
+20:33:37.127 app:server:http HTTP request completed: /api/products
+20:33:37.129 app:server:websocket WebSocket message received: user-connected
+20:33:37.162 app:server:websocket WebSocket message processed: user-connected
 
 --- Changing debug configuration at runtime ---
 Changing DEBUG from 'app:server:*' to '*,!app:server:websocket,app:database'
-20:16:27.781 app:server:http Received HTTP request: /api/settings
-20:16:27.832 app:server:http HTTP request completed: /api/settings
-20:16:27.863 app:database Executing complex query
-20:16:27.864 app:database Query completed in 25ms
-20:16:27.864 app:security Security audit completed
+20:33:37.162 app:server:http Received HTTP request: /api/settings
+20:33:37.213 app:server:http HTTP request completed: /api/settings
+20:33:37.244 app:database Executing complex query
+20:33:37.244 app:database Query completed in 25ms
+20:33:37.244 app:security Security audit completed
 ```
 
 #### Output with DEBUG=*
 
 ```
-$ DEBUG=* go run examples/advanced/main.go
+$ DEBUG="*" go run examples/advanced/main.go
 Starting application with DEBUG=*
 Try running with different DEBUG settings:
   DEBUG=app:* ./advanced
   DEBUG=app:server:* ./advanced
   DEBUG=*,!app:server:websocket ./advanced
 
-20:16:28.037 app:server Server initializing
-20:16:28.037 app:server:http HTTP server starting on port 8080
-20:16:28.037 app:server:websocket WebSocket server starting on port 8081
-20:16:28.037 app:database Connecting to database
-20:16:28.037 app:server:http Received HTTP request: /api/users
-20:16:28.088 app:server:http HTTP request completed: /api/users
-20:16:28.088 app:server:http Received HTTP request: /api/products
-20:16:28.139 app:server:http HTTP request completed: /api/products
-20:16:28.139 app:server:websocket WebSocket message received: user-connected
-20:16:28.170 app:server:websocket WebSocket message processed: user-connected
+20:33:45.787 app:server Server initializing
+20:33:45.787 app:server:http HTTP server starting on port 8080
+20:33:45.787 app:server:websocket WebSocket server starting on port 8081
+20:33:45.787 app:database Connecting to database
+20:33:45.787 app:server:http Received HTTP request: /api/users
+20:33:45.838 app:server:http HTTP request completed: /api/users
+20:33:45.838 app:server:http Received HTTP request: /api/products
+20:33:45.889 app:server:http HTTP request completed: /api/products
+20:33:45.889 app:server:websocket WebSocket message received: user-connected
+20:33:45.922 app:server:websocket WebSocket message processed: user-connected
 
 --- Changing debug configuration at runtime ---
 Changing DEBUG from '*' to '*,!app:server:websocket,app:database'
-20:16:28.170 app:server:http Received HTTP request: /api/settings
-20:16:28.221 app:server:http HTTP request completed: /api/settings
-20:16:28.252 app:database Executing complex query
-20:16:28.252 app:database Query completed in 25ms
-20:16:28.252 app:security Security audit completed
+20:33:45.927 app:server:http Received HTTP request: /api/settings
+20:33:45.978 app:server:http HTTP request completed: /api/settings
+20:33:46.009 app:database Executing complex query
+20:33:46.009 app:database Query completed in 25ms
+20:33:46.009 app:security Security audit completed
 ```
 
 ## Development
