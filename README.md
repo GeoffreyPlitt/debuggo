@@ -121,18 +121,70 @@ cmd.Stderr = &debuggo.PrefixWriter{
 
 ## Examples
 
+The repository contains example applications demonstrating various features:
+
 ### Basic Example
 
-See [examples/basic/main.go](examples/basic/main.go) for a simple usage example.
+See [examples/basic/main.go](examples/basic/main.go) for a simple usage example:
 
-Run the basic example with:
+```go
+// Basic example of using debuggo
+package main
 
-```bash
-# Show all debug messages
-DEBUG=* go run examples/basic/main.go
+import (
+    "fmt"
+    "time"
+    "github.com/GeoffreyPlitt/debuggo"
+)
 
-# Show only database-related messages
-DEBUG=db go run examples/basic/main.go
+// Initialize debug loggers at package level
+var (
+    debugApp = debuggo.Debug("app")
+    debugDb  = debuggo.Debug("db")
+    debugApi = debuggo.Debug("api")
+)
+
+func main() {
+    // Application startup
+    fmt.Println("Starting application...")
+    debugApp("Application starting")
+    
+    debugDb("Connecting to database")
+    time.Sleep(100 * time.Millisecond)
+    debugDb("Database connected")
+    
+    debugApi("API server listening on port 8080")
+    
+    if debuggo.IsEnabled("app") {
+        // Only runs when "app" debugging is enabled
+        debugApp("Detailed startup information: %v", getDetailedInfo())
+    }
+    
+    fmt.Println("Application running.")
+}
+```
+
+#### Output with DEBUG=*
+
+```
+$ DEBUG=* go run examples/basic/main.go
+Starting application...
+20:16:27.045 app Application starting
+20:16:27.045 db Connecting to database
+20:16:27.146 db Database connected
+20:16:27.146 api API server listening on port 8080
+20:16:27.146 app Detailed startup information: map[buildDate:2025-05-21 20:16:27.146 environment:development version:1.0.0]
+Application running. Debug messages were sent to stderr.
+```
+
+#### Output with DEBUG=db
+
+```
+$ DEBUG=db go run examples/basic/main.go
+Starting application...
+20:16:27.331 db Connecting to database
+20:16:27.432 db Database connected
+Application running. Debug messages were sent to stderr.
 ```
 
 ### Advanced Example
@@ -142,17 +194,87 @@ See [examples/advanced/main.go](examples/advanced/main.go) for:
 - Runtime reconfiguration
 - Selective enabling/disabling
 
-Run the advanced example with:
+#### Output with DEBUG=app:server:*
+
+```
+$ DEBUG=app:server:* go run examples/advanced/main.go
+Starting application with DEBUG=app:server:*
+Try running with different DEBUG settings:
+  DEBUG=app:* ./advanced
+  DEBUG=app:server:* ./advanced
+  DEBUG=*,!app:server:websocket ./advanced
+
+20:16:27.648 app:server:http HTTP server starting on port 8080
+20:16:27.648 app:server:websocket WebSocket server starting on port 8081
+20:16:27.648 app:server:http Received HTTP request: /api/users
+20:16:27.699 app:server:http HTTP request completed: /api/users
+20:16:27.699 app:server:http Received HTTP request: /api/products
+20:16:27.750 app:server:http HTTP request completed: /api/products
+20:16:27.750 app:server:websocket WebSocket message received: user-connected
+20:16:27.781 app:server:websocket WebSocket message processed: user-connected
+
+--- Changing debug configuration at runtime ---
+Changing DEBUG from 'app:server:*' to '*,!app:server:websocket,app:database'
+20:16:27.781 app:server:http Received HTTP request: /api/settings
+20:16:27.832 app:server:http HTTP request completed: /api/settings
+20:16:27.863 app:database Executing complex query
+20:16:27.864 app:database Query completed in 25ms
+20:16:27.864 app:security Security audit completed
+```
+
+#### Output with DEBUG=*
+
+```
+$ DEBUG=* go run examples/advanced/main.go
+Starting application with DEBUG=*
+Try running with different DEBUG settings:
+  DEBUG=app:* ./advanced
+  DEBUG=app:server:* ./advanced
+  DEBUG=*,!app:server:websocket ./advanced
+
+20:16:28.037 app:server Server initializing
+20:16:28.037 app:server:http HTTP server starting on port 8080
+20:16:28.037 app:server:websocket WebSocket server starting on port 8081
+20:16:28.037 app:database Connecting to database
+20:16:28.037 app:server:http Received HTTP request: /api/users
+20:16:28.088 app:server:http HTTP request completed: /api/users
+20:16:28.088 app:server:http Received HTTP request: /api/products
+20:16:28.139 app:server:http HTTP request completed: /api/products
+20:16:28.139 app:server:websocket WebSocket message received: user-connected
+20:16:28.170 app:server:websocket WebSocket message processed: user-connected
+
+--- Changing debug configuration at runtime ---
+Changing DEBUG from '*' to '*,!app:server:websocket,app:database'
+20:16:28.170 app:server:http Received HTTP request: /api/settings
+20:16:28.221 app:server:http HTTP request completed: /api/settings
+20:16:28.252 app:database Executing complex query
+20:16:28.252 app:database Query completed in 25ms
+20:16:28.252 app:security Security audit completed
+```
+
+## Development
+
+### Example Runner
+
+The repository includes a script to run examples and capture their output for documentation:
 
 ```bash
-# Show all debug messages
-DEBUG=* go run examples/advanced/main.go
+# Run examples with different DEBUG settings and capture output
+./scripts/run_examples.sh
+```
 
-# Show only server-related messages
-DEBUG=app:server:* go run examples/advanced/main.go
+This script:
+- Creates a standalone environment for examples 
+- Runs examples with different DEBUG settings
+- Captures standard output and error streams
+- Saves output files for documentation purposes
+- Provides comprehensive cleanup steps
 
-# Show all except websocket messages
-DEBUG=*,!app:server:websocket go run examples/advanced/main.go
+To clean up after running the script:
+
+```bash
+# Remove generated output files
+rm -rf ./example_outputs
 ```
 
 ## License
