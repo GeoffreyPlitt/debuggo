@@ -7,33 +7,39 @@ on:
     branches: [ main ]
 
 jobs:
-  build:
+  test:
+    name: Build and Test
     runs-on: ubuntu-latest
     strategy:
       matrix:
         go-version: ['1.19', '1.20', '1.21']
-
+    
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v3
 
     - name: Set up Go ${{ matrix.go-version }}
       uses: actions/setup-go@v4
       with:
         go-version: ${{ matrix.go-version }}
+        cache: true
 
-    - name: Lint
+    - name: Verify code quality
       run: go vet ./...
       
-    - name: Build
+    - name: Build library
       run: go build -v ./...
+      if: success()
       
-    - name: Build basic example
+    - name: Verify basic example builds
       run: go build -v ./examples/basic
+      if: success()
       
-    - name: Build advanced example
+    - name: Verify advanced example builds
       run: go build -v ./examples/advanced
+      if: success()
 
-    - name: Test
+    - name: Run tests with race detection
       if: success()
       run: go test -v -race -coverprofile=coverage.txt -covermode=atomic ./...
 

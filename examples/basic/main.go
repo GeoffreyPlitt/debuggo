@@ -1,3 +1,10 @@
+// Basic example of using debuggo
+//
+// Run with:
+//
+//	DEBUG=* go run main.go         # Show all debug messages
+//	DEBUG=db go run main.go        # Show only database messages
+//	DEBUG=app,api go run main.go   # Show app and API messages
 package main
 
 import (
@@ -6,28 +13,34 @@ import (
 	"github.com/GeoffreyPlitt/debuggo"
 )
 
-func main() {
-	// Create debug loggers for different modules
-	debugApp := debuggo.Debug("app")
-	debugDb := debuggo.Debug("db")
-	debugApi := debuggo.Debug("api")
+// Initialize debug loggers at package level for different components
+var (
+	debugApp = debuggo.Debug("app")
+	debugDb  = debuggo.Debug("db")
+	debugApi = debuggo.Debug("api")
+)
 
-	// Log some messages
+func main() {
+	// Application startup sequence with debug logs
 	debugApp("Application starting")
 
+	// Simulating database connection
 	debugDb("Connecting to database")
 	time.Sleep(100 * time.Millisecond)
 	debugDb("Database connected")
 
+	// Simulating API server startup
 	debugApi("API server listening on port 8080")
 
-	// You can also check if debugging is enabled
+	// Conditionally execute expensive debug operations
 	if debuggo.IsEnabled("app") {
-		// Expensive debug operations can be wrapped in this check
+		// This code only runs when "app" debugging is enabled
 		debugApp("Detailed startup information: %v", getDetailedInfo())
 	}
 }
 
+// getDetailedInfo returns detailed information for debugging
+// This simulates an expensive operation you might want to skip when debugging is disabled
 func getDetailedInfo() map[string]string {
 	return map[string]string{
 		"version":     "1.0.0",

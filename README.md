@@ -9,11 +9,11 @@ A lightweight debugging utility for Go applications inspired by the Node.js [deb
 
 ## Features
 
-- Environment variable controlled debugging
-- Namespace support with hierarchical modules (e.g., `app:http:server`)
-- Minimal overhead when disabled
-- Runtime reconfiguration
-- Selective module enabling/disabling
+- **Environment variable control** - Enable/disable debug output via the `DEBUG` env var
+- **Hierarchical namespaces** - Organize debug messages in namespaces like `app:server:http`
+- **Zero overhead when disabled** - Debug statements incur virtually no cost when disabled
+- **Runtime reconfiguration** - Change debug settings without restarting your application
+- **Conditional debugging** - Skip expensive debug operations when not needed
 
 ## Installation
 
@@ -30,18 +30,22 @@ import (
     "github.com/GeoffreyPlitt/debuggo"
 )
 
-// Create debug loggers for different modules
-var (
-    debugApp = debuggo.Debug("app")
-    debugDb = debuggo.Debug("db")
-)
+// Create debug loggers for different components
+var debug = debuggo.Debug("myapp")
+var dbDebug = debuggo.Debug("myapp:database")
 
 func main() {
-    // Use debug loggers throughout your code
-    debugApp("Application starting")
+    debug("Application starting up")
     
-    // Debug messages only appear when the corresponding namespace is enabled
-    debugDb("Connected to database")
+    if dbDebug("Connecting to database..."); dbDebug("Connected!") {
+        // Debug messages are only printed when enabled
+    }
+    
+    // Check if debugging is enabled before doing expensive operations
+    if debuggo.IsEnabled("myapp:metrics") {
+        // Generate expensive debug data only when needed
+        debug("Memory usage: %v", collectMemoryMetrics())
+    }
 }
 ```
 
@@ -57,7 +61,7 @@ DEBUG=* go run main.go
 DEBUG=http,db go run main.go
 
 # Enable hierarchical modules
-DEBUG=api:* go run main.go  # Enables all 'api:' modules
+DEBUG=myapp:* go run main.go  # Enables all 'myapp:' modules
 
 # Enable everything except specific modules
 DEBUG=*,!verbose go run main.go
@@ -65,32 +69,52 @@ DEBUG=*,!verbose go run main.go
 
 ## Advanced Usage
 
-### Check if Debugging is Enabled
+### Hierarchical Namespaces
+
+Organize your debug loggers with namespaces to enable selective debugging:
 
 ```go
-if debuggo.IsEnabled("expensive:computation") {
-    // Only do expensive debug operations if enabled
-    debugComputation("Detailed debug info: %v", computeExpensiveDebugData())
+var (
+    debugHttp = debuggo.Debug("app:http")       // HTTP server component
+    debugWs   = debuggo.Debug("app:websocket")  // WebSocket component
+    debugDb   = debuggo.Debug("app:database")   // Database component
+)
+
+// Enable only HTTP logs with: DEBUG=app:http
+// Enable all components with: DEBUG=app:*
+```
+
+### Conditional Debugging
+
+Skip expensive debug operations when debugging is disabled:
+
+```go
+if debuggo.IsEnabled("app:metrics") {
+    debugMetrics("System stats: %v", collectDetailedMetrics())
 }
 ```
 
 ### Runtime Reconfiguration
 
+Change debug settings without restarting your application:
+
 ```go
-// Update debug settings without restarting your application
+// Change debug settings dynamically
 os.Setenv("DEBUG", "newmodule,*:important")
 debuggo.ReloadDebugSettings()
 ```
 
-### Using PrefixWriter for Command Output
+### Using PrefixWriter
+
+Capture and prefix command output for easier debugging:
 
 ```go
 cmd := exec.Command("some-program")
 
 // Prefix stdout and stderr with custom identifiers
-cmd.Stdout = &debuggo.PrefixWriter{Prefix: "CMD-STDOUT"}
+cmd.Stdout = &debuggo.PrefixWriter{Prefix: "CMD-OUT>"}
 cmd.Stderr = &debuggo.PrefixWriter{
-    Prefix: "CMD-STDERR",
+    Prefix:  "CMD-ERR>",
     Ignores: []string{"known warning to ignore"},
 }
 ```
@@ -101,9 +125,22 @@ cmd.Stderr = &debuggo.PrefixWriter{
 
 See [examples/basic/main.go](examples/basic/main.go) for a simple usage example.
 
+Run the basic example with:
+
+```bash
+# Show all debug messages
+DEBUG=* go run examples/basic/main.go
+
+# Show only database-related messages
+DEBUG=db go run examples/basic/main.go
+```
+
 ### Advanced Example
 
-See [examples/advanced/main.go](examples/advanced/main.go) for an example with hierarchical namespaces and runtime reconfiguration.
+See [examples/advanced/main.go](examples/advanced/main.go) for:
+- Hierarchical namespaces
+- Runtime reconfiguration
+- Selective enabling/disabling
 
 Run the advanced example with:
 

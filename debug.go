@@ -1,3 +1,17 @@
+// Package debuggo provides a lightweight debugging utility for Go applications
+// inspired by the Node.js debug package. It allows for environment variable
+// controlled debugging with namespace support.
+//
+// Usage:
+//
+//	var debug = debuggo.Debug("myapp:component")
+//	debug("Processing item %s", item.ID)
+//
+// Control via environment variable:
+//
+//	DEBUG=* # Enable all debug messages
+//	DEBUG=myapp:* # Enable all myapp namespace messages
+//	DEBUG=*,!verbose # Enable all except verbose namespace
 package debuggo
 
 import (
@@ -20,7 +34,12 @@ func init() {
 	parseDebugEnv()
 }
 
-// parseDebugEnv parses the DEBUG environment variable to determine which modules to log
+// parseDebugEnv parses the DEBUG environment variable to determine which modules to log.
+// Format: DEBUG=namespace1,namespace2:*,!namespace3
+// - Use comma to separate multiple namespaces
+// - Use * as wildcard for all namespaces
+// - Prefix with ! to negate a namespace
+// - Use colon (:) for hierarchical namespaces
 func parseDebugEnv() {
 	debugMu.Lock()
 	defer debugMu.Unlock()
@@ -67,7 +86,14 @@ func parseDebugEnv() {
 	isInitialized = true
 }
 
-// Debug returns a function that logs debug messages for the specified module
+// Debug returns a function that logs debug messages for the specified module.
+// The returned function mimics fmt.Printf, but only outputs when the module
+// is enabled via the DEBUG environment variable.
+//
+// Example:
+//
+//	debug := Debug("app:server")
+//	debug("Server starting on port %d", port)
 func Debug(module string) func(format string, args ...interface{}) {
 	return func(format string, args ...interface{}) {
 		// We need to ensure we're checking the same condition as IsEnabled
@@ -90,7 +116,14 @@ func Debug(module string) func(format string, args ...interface{}) {
 	}
 }
 
-// IsEnabled checks if debugging is enabled for a module
+// IsEnabled checks if debugging is enabled for a module.
+// This is useful for wrapping expensive debug operations.
+//
+// Example:
+//
+//	if IsEnabled("app:metrics") {
+//	    // Compute expensive debug data
+//	}
 func IsEnabled(module string) bool {
 	debugMu.RLock()
 	defer debugMu.RUnlock()
@@ -162,7 +195,13 @@ func isEnabledByWildcard(module string) bool {
 	return false
 }
 
-// ReloadDebugSettings allows reloading DEBUG environment variable at runtime
+// ReloadDebugSettings allows reloading DEBUG environment variable at runtime.
+// This is useful for changing debug settings without restarting the application.
+//
+// Example:
+//
+//	os.Setenv("DEBUG", "api:*,!api:auth")
+//	ReloadDebugSettings()
 func ReloadDebugSettings() {
 	debugMu.Lock()
 	isInitialized = false
@@ -170,13 +209,18 @@ func ReloadDebugSettings() {
 	parseDebugEnv()
 }
 
-// PrefixWriter is a writer that adds a prefix to each line written
+// PrefixWriter is a writer that adds a prefix to each line written.
+// It can also be configured to ignore certain phrases.
+// Implements io.Writer interface for integration with standard libraries.
 type PrefixWriter struct {
-	Prefix  string
+	// Prefix is added to the beginning of each line
+	Prefix string
+	// Ignores is a list of phrases that will cause the line to be skipped if found
 	Ignores []string
 }
 
-// Write implements the io.Writer interface
+// Write implements the io.Writer interface.
+// It adds a prefix to each line and filters out lines containing ignored phrases.
 func (pw *PrefixWriter) Write(p []byte) (n int, err error) {
 	text := string(p)
 
