@@ -254,6 +254,15 @@ Changing DEBUG from '*' to '*,!app:server:websocket,app:database'
 
 ## Development
 
+### Running Tests
+
+The repository includes a script to run tests and generate code coverage reports:
+
+```bash
+# Run tests and generate coverage report in coverage.txt
+./scripts/run_tests.sh
+```
+
 ### Example Runner
 
 The repository includes a script to run examples and capture their output for documentation:
