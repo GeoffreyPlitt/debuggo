@@ -40,6 +40,6 @@ Thumbs.db
 .env
 
 # our example binaries and outputs
-basic
-advanced
+/basic
+/advanced
 example_outputs
