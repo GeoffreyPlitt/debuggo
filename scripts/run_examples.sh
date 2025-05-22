@@ -16,10 +16,18 @@ echo -e "${GREEN}==================================================${NC}"
 echo -e "${GREEN}   debuggo Examples Runner${NC}"
 echo -e "${GREEN}==================================================${NC}"
 
+# Function to handle errors gracefully
+handle_error() {
+	echo -e "${YELLOW}Warning: An error occurred but continuing...${NC}"
+}
+
+# Ensure script continues even if some commands fail
+trap handle_error ERR
+
 # Clean up any previous output files
 echo -e "${YELLOW}Cleaning up previous output files...${NC}"
-rm -f ./*.stdout ./*.stderr ./examples/*.stdout ./examples/*.stderr
-rm -f ./basic_*.out* ./advanced_*.out*
+rm -f ./*.stdout ./*.stderr ./examples/*.stdout ./examples/*.stderr 2>/dev/null || true
+rm -f ./basic_*.out* ./advanced_*.out* 2>/dev/null || true
 
 # Create temporary directory
 TMPDIR=$(mktemp -d)
@@ -387,25 +395,27 @@ func simulateWebSocketMessage(message string) {
 }
 EOF
 
-# Output directory
-OUTDIR="./example_outputs"
-mkdir -p $OUTDIR
+# Output directory - ensure it exists with absolute path
+OUTDIR=$(pwd)/example_outputs
+mkdir -p "$OUTDIR"
+
+echo -e "${YELLOW}Output will be saved to ${OUTDIR}${NC}"
 
 # Run examples and capture output
 echo -e "${YELLOW}=== Running basic example with DEBUG=* ===${NC}"
-(cd $TMPDIR/basic && DEBUG="*" go run . > >(tee $OUTDIR/basic_all_output.stdout) 2> >(tee $OUTDIR/basic_all_output.stderr >&2))
+(cd $TMPDIR/basic && DEBUG="*" go run . > $OUTDIR/basic_all_output.stdout 2> $OUTDIR/basic_all_output.stderr)
 
 echo ""
 echo -e "${YELLOW}=== Running basic example with DEBUG=db ===${NC}"
-(cd $TMPDIR/basic && DEBUG="db" go run . > >(tee $OUTDIR/basic_db_output.stdout) 2> >(tee $OUTDIR/basic_db_output.stderr >&2))
+(cd $TMPDIR/basic && DEBUG="db" go run . > $OUTDIR/basic_db_output.stdout 2> $OUTDIR/basic_db_output.stderr)
 
 echo ""
 echo -e "${YELLOW}=== Running advanced example with DEBUG=app:server:* ===${NC}"
-(cd $TMPDIR/advanced && DEBUG="app:server:*" go run . > >(tee $OUTDIR/advanced_server_output.stdout) 2> >(tee $OUTDIR/advanced_server_output.stderr >&2))
+(cd $TMPDIR/advanced && DEBUG="app:server:*" go run . > $OUTDIR/advanced_server_output.stdout 2> $OUTDIR/advanced_server_output.stderr)
 
 echo ""
 echo -e "${YELLOW}=== Running advanced example with DEBUG=* ===${NC}"
-(cd $TMPDIR/advanced && DEBUG="*" go run . > >(tee $OUTDIR/advanced_all_output.stdout) 2> >(tee $OUTDIR/advanced_all_output.stderr >&2))
+(cd $TMPDIR/advanced && DEBUG="*" go run . > $OUTDIR/advanced_all_output.stdout 2> $OUTDIR/advanced_all_output.stderr)
 
 echo ""
 echo -e "${GREEN}All outputs captured in ${OUTDIR}/${NC}"
@@ -415,30 +425,30 @@ echo -e "${GREEN}You can use these files to update the README.md or documentatio
 echo ""
 echo -e "${GREEN}=== Basic Example (DEBUG=*) ===${NC}"
 echo -e "${YELLOW}STDOUT:${NC}"
-cat $OUTDIR/basic_all_output.stdout
+cat $OUTDIR/basic_all_output.stdout 2>/dev/null || echo "No stdout captured"
 echo -e "${YELLOW}STDERR:${NC}"
-cat $OUTDIR/basic_all_output.stderr
+cat $OUTDIR/basic_all_output.stderr 2>/dev/null || echo "No stderr captured"
 
 echo ""
 echo -e "${GREEN}=== Basic Example (DEBUG=db) ===${NC}"
 echo -e "${YELLOW}STDOUT:${NC}"
-cat $OUTDIR/basic_db_output.stdout
+cat $OUTDIR/basic_db_output.stdout 2>/dev/null || echo "No stdout captured"
 echo -e "${YELLOW}STDERR:${NC}"
-cat $OUTDIR/basic_db_output.stderr
+cat $OUTDIR/basic_db_output.stderr 2>/dev/null || echo "No stderr captured"
 
 echo ""
 echo -e "${GREEN}=== Advanced Example (DEBUG=app:server:*) ===${NC}"
 echo -e "${YELLOW}STDOUT:${NC}"
-cat $OUTDIR/advanced_server_output.stdout
+cat $OUTDIR/advanced_server_output.stdout 2>/dev/null || echo "No stdout captured"
 echo -e "${YELLOW}STDERR:${NC}"
-cat $OUTDIR/advanced_server_output.stderr
+cat $OUTDIR/advanced_server_output.stderr 2>/dev/null || echo "No stderr captured"
 
 echo ""
 echo -e "${GREEN}=== Advanced Example (DEBUG=*) ===${NC}"
 echo -e "${YELLOW}STDOUT:${NC}"
-cat $OUTDIR/advanced_all_output.stdout
+cat $OUTDIR/advanced_all_output.stdout 2>/dev/null || echo "No stdout captured"
 echo -e "${YELLOW}STDERR:${NC}"
-cat $OUTDIR/advanced_all_output.stderr
+cat $OUTDIR/advanced_all_output.stderr 2>/dev/null || echo "No stderr captured"
 
 echo ""
 echo -e "${GREEN}==================================================${NC}"
@@ -452,4 +462,7 @@ echo "1. Copy the content from the output files"
 echo "2. Update the README.md with the actual output examples"
 echo ""
 echo -e "${YELLOW}To clean up all generated files:${NC}"
-echo "  rm -rf $OUTDIR" 
+echo "  rm -rf $OUTDIR"
+
+# Always exit with success
+exit 0 

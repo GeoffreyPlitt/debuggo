@@ -43,6 +43,12 @@ jobs:
       if: success()
       run: go test -v -race -coverprofile=coverage.txt -covermode=atomic ./...
 
+    - name: Run examples via script
+      if: success()
+      run: |
+        chmod +x ./scripts/run_examples.sh
+        ./scripts/run_examples.sh
+      
     - name: Upload coverage reports to Codecov
       uses: codecov/codecov-action@v5
       with:

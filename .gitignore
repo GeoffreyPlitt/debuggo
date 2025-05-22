@@ -39,6 +39,7 @@ Thumbs.db
 # env file
 .env
 
-# our example binaries
+# our example binaries and outputs
 basic
 advanced
+example_outputs
