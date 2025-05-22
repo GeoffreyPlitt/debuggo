@@ -169,11 +169,11 @@ func main() {
 ```
 $ DEBUG="*" go run examples/basic/main.go
 Starting application...
-20:33:19.161 app Application starting
-20:33:19.161 db Connecting to database
-20:33:19.261 db Database connected
-20:33:19.261 api API server listening on port 8080
-20:33:19.261 app Detailed startup information: map[buildDate:2025-05-21 20:33:19.26193 -0700 PDT m=+0.100638126 environment:development version:1.0.0]
+20:44:04.909 app Application starting
+20:44:04.909 db Connecting to database
+20:44:05.010 db Database connected
+20:44:05.010 api API server listening on port 8080
+20:44:05.010 app Detailed startup information: map[buildDate:2025-05-21 20:44:05.01036 -0700 PDT m=+0.101441584 environment:development version:1.0.0]
 Application running. Debug messages were sent to stderr.
 ```
 
@@ -182,8 +182,8 @@ Application running. Debug messages were sent to stderr.
 ```
 $ DEBUG="db" go run examples/basic/main.go
 Starting application...
-20:33:27.828 db Connecting to database
-20:33:27.929 db Database connected
+20:44:05.249 db Connecting to database
+20:44:05.350 db Database connected
 Application running. Debug messages were sent to stderr.
 ```
 
@@ -204,22 +204,22 @@ Try running with different DEBUG settings:
   DEBUG=app:server:* ./advanced
   DEBUG=*,!app:server:websocket ./advanced
 
-20:33:37.024 app:server:http HTTP server starting on port 8080
-20:33:37.024 app:server:websocket WebSocket server starting on port 8081
-20:33:37.024 app:server:http Received HTTP request: /api/users
-20:33:37.075 app:server:http HTTP request completed: /api/users
-20:33:37.075 app:server:http Received HTTP request: /api/products
-20:33:37.127 app:server:http HTTP request completed: /api/products
-20:33:37.129 app:server:websocket WebSocket message received: user-connected
-20:33:37.162 app:server:websocket WebSocket message processed: user-connected
+20:44:05.557 app:server:http HTTP server starting on port 8080
+20:44:05.558 app:server:websocket WebSocket server starting on port 8081
+20:44:05.558 app:server:http Received HTTP request: /api/users
+20:44:05.609 app:server:http HTTP request completed: /api/users
+20:44:05.609 app:server:http Received HTTP request: /api/products
+20:44:05.660 app:server:http HTTP request completed: /api/products
+20:44:05.660 app:server:websocket WebSocket message received: user-connected
+20:44:05.691 app:server:websocket WebSocket message processed: user-connected
 
 --- Changing debug configuration at runtime ---
 Changing DEBUG from 'app:server:*' to '*,!app:server:websocket,app:database'
-20:33:37.162 app:server:http Received HTTP request: /api/settings
-20:33:37.213 app:server:http HTTP request completed: /api/settings
-20:33:37.244 app:database Executing complex query
-20:33:37.244 app:database Query completed in 25ms
-20:33:37.244 app:security Security audit completed
+20:44:05.691 app:server:http Received HTTP request: /api/settings
+20:44:05.742 app:server:http HTTP request completed: /api/settings
+20:44:05.773 app:database Executing complex query
+20:44:05.773 app:database Query completed in 25ms
+20:44:05.773 app:security Security audit completed
 ```
 
 #### Output with DEBUG=*
@@ -232,24 +232,24 @@ Try running with different DEBUG settings:
   DEBUG=app:server:* ./advanced
   DEBUG=*,!app:server:websocket ./advanced
 
-20:33:45.787 app:server Server initializing
-20:33:45.787 app:server:http HTTP server starting on port 8080
-20:33:45.787 app:server:websocket WebSocket server starting on port 8081
-20:33:45.787 app:database Connecting to database
-20:33:45.787 app:server:http Received HTTP request: /api/users
-20:33:45.838 app:server:http HTTP request completed: /api/users
-20:33:45.838 app:server:http Received HTTP request: /api/products
-20:33:45.889 app:server:http HTTP request completed: /api/products
-20:33:45.889 app:server:websocket WebSocket message received: user-connected
-20:33:45.922 app:server:websocket WebSocket message processed: user-connected
+20:44:05.942 app:server Server initializing
+20:44:05.942 app:server:http HTTP server starting on port 8080
+20:44:05.942 app:server:websocket WebSocket server starting on port 8081
+20:44:05.942 app:database Connecting to database
+20:44:05.942 app:server:http Received HTTP request: /api/users
+20:44:05.993 app:server:http HTTP request completed: /api/users
+20:44:05.993 app:server:http Received HTTP request: /api/products
+20:44:06.044 app:server:http HTTP request completed: /api/products
+20:44:06.044 app:server:websocket WebSocket message received: user-connected
+20:44:06.075 app:server:websocket WebSocket message processed: user-connected
 
 --- Changing debug configuration at runtime ---
 Changing DEBUG from '*' to '*,!app:server:websocket,app:database'
-20:33:45.927 app:server:http Received HTTP request: /api/settings
-20:33:45.978 app:server:http HTTP request completed: /api/settings
-20:33:46.009 app:database Executing complex query
-20:33:46.009 app:database Query completed in 25ms
-20:33:46.009 app:security Security audit completed
+20:44:06.075 app:server:http Received HTTP request: /api/settings
+20:44:06.126 app:server:http HTTP request completed: /api/settings
+20:44:06.157 app:database Executing complex query
+20:44:06.157 app:database Query completed in 25ms
+20:44:06.158 app:security Security audit completed
 ```
 
 ## Development
