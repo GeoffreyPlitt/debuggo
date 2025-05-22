@@ -104,21 +104,6 @@ os.Setenv("DEBUG", "newmodule,*:important")
 debuggo.ReloadDebugSettings()
 ```
 
-### Using PrefixWriter
-
-Capture and prefix command output for easier debugging:
-
-```go
-cmd := exec.Command("some-program")
-
-// Prefix stdout and stderr with custom identifiers
-cmd.Stdout = &debuggo.PrefixWriter{Prefix: "CMD-OUT>"}
-cmd.Stderr = &debuggo.PrefixWriter{
-    Prefix:  "CMD-ERR>",
-    Ignores: []string{"known warning to ignore"},
-}
-```
-
 ## Examples
 
 The repository contains example applications demonstrating various features:
